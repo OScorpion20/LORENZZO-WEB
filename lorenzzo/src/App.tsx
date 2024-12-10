@@ -14,6 +14,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import OrderTracking from "./pages/OrderTracking";
 import ProviderOrders from "./pages/ProviderOrders";
 import { ToastContainer } from "react-toastify";
+import { AuthProvider } from "./context/AuthContext"; // Importar el AuthProvider
 import "react-toastify/dist/ReactToastify.css";
 import "./styles/Home.css"; // Importar los estilos del Home
 
@@ -38,88 +39,90 @@ function HomePage() {
 
 function App() {
   return (
-    <Router>
-      <ToastContainer position="top-right" autoClose={3000} />
-      <Navbar /> {/* Navbar global */}
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/login" element={<Login />} />
+    <AuthProvider>
+      {/* Envuelve la aplicación con el AuthProvider */}
+      <Router>
+        <ToastContainer position="top-right" autoClose={3000} />
+        <Navbar /> {/* Navbar global */}
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/login" element={<Login />} />
 
-        {/* Rutas protegidas */}
-        <Route
-          path="/add-product"
-          element={
-            <ProtectedRoute allowedRoles={["proveedor", "administrador"]}>
-              <AddProduct />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/products"
-          element={
-            <ProtectedRoute allowedRoles={["proveedor", "administrador"]}>
-              <ProductList />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin"
-          element={
-            <ProtectedRoute allowedRoles={["administrador"]}>
-              <AdminDashboard />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin/products"
-          element={
-            <ProtectedRoute allowedRoles={["administrador"]}>
-              <AdminProductList />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin/products/edit/:id"
-          element={
-            <ProtectedRoute allowedRoles={["administrador"]}>
-              <EditProduct />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/edit-product/:id"
-          element={
-            <ProtectedRoute allowedRoles={["proveedor", "administrador"]}>
-              <EditProduct />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/provider-orders"
-          element={
-            <ProtectedRoute allowedRoles={["proveedor", "administrador"]}>
-               <ProviderOrders />
-            </ProtectedRoute>
-          }
-        />
+          {/* Rutas protegidas */}
+          <Route
+            path="/add-product"
+            element={
+              <ProtectedRoute allowedRoles={["proveedor", "administrador"]}>
+                <AddProduct />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/products"
+            element={
+              <ProtectedRoute allowedRoles={["proveedor", "administrador"]}>
+                <ProductList />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute allowedRoles={["administrador"]}>
+                <AdminDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/products"
+            element={
+              <ProtectedRoute allowedRoles={["administrador"]}>
+                <AdminProductList />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/products/edit/:id"
+            element={
+              <ProtectedRoute allowedRoles={["administrador"]}>
+                <EditProduct />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/edit-product/:id"
+            element={
+              <ProtectedRoute allowedRoles={["proveedor", "administrador"]}>
+                <EditProduct />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/provider-orders"
+            element={
+              <ProtectedRoute allowedRoles={["proveedor", "administrador"]}>
+                <ProviderOrders />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/order-tracking"
+            element={
+              <ProtectedRoute allowedRoles={["cliente"]}>
+                <OrderTracking />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="/products-display" element={<ProductDisplay />} />
+          <Route path="/cart" element={<CartPage />} />
+          <Route path="/products/:id" element={<ProductDetail />} />
 
-        <Route
-          path="/order-tracking"
-          element={
-            <ProtectedRoute allowedRoles={["cliente"]}>
-              <OrderTracking />
-            </ProtectedRoute>
-          }
-        />
-        <Route path="/products-display" element={<ProductDisplay />} />
-        <Route path="/cart" element={<CartPage />} />
-        <Route path="/products/:id" element={<ProductDetail />} />
-
-        {/* Página de acceso denegado */}
-        <Route path="/not-authorized" element={<h1>Acceso Denegado</h1>} />
-      </Routes>
-    </Router>
+          {/* Página de acceso denegado */}
+          <Route path="/not-authorized" element={<h1>Acceso Denegado</h1>} />
+        </Routes>
+      </Router>
+    </AuthProvider>
   );
 }
 

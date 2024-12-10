@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import API from "../api";
+import { useAuth } from "../context/AuthContext"; // Importar el contexto de autenticación
 import "../styles/Login.css";
 
 const Login: React.FC = () => {
@@ -9,6 +10,7 @@ const Login: React.FC = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const { login } = useAuth(); // Usar el contexto para manejar la sesión
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,6 +29,9 @@ const Login: React.FC = () => {
 
       const decodedToken: any = jwtDecode(token);
       const userRole = decodedToken.role;
+
+      // Actualizar el contexto con el token y rol
+      login(token);
 
       // Validar si la cuenta está deshabilitada
       if (response.data.message === "Cuenta deshabilitada. Contacta al administrador.") {

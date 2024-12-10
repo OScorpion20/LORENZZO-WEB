@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   FaShoppingCart,
@@ -9,28 +9,18 @@ import {
   FaSignOutAlt,
   FaThList,
   FaTools,
-  FaClipboardList, // Nuevo ícono añadido
+  FaClipboardList,
 } from "react-icons/fa";
+import { useAuth } from "../context/AuthContext"; // Importar el contexto de autenticación
 
 const Navbar: React.FC = () => {
+  const { user, logout, isLoggedIn } = useAuth(); // Acceder al usuario, logout y estado de autenticación
   const navigate = useNavigate();
-  const [role, setRole] = useState<string | null>(null);
-
-  useEffect(() => {
-    // Decodificar el token para obtener el rol del usuario
-    const token = localStorage.getItem("token");
-    if (token) {
-      const decodedToken = JSON.parse(atob(token.split(".")[1]));
-      setRole(decodedToken.role);
-    }
-  }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem("token"); // Elimina el token del almacenamiento local
-    navigate("/login"); // Redirige al usuario a la página de inicio de sesión
+    logout(); // Cerrar sesión usando el contexto
+    navigate("/login");
   };
-
-  const isLoggedIn = !!localStorage.getItem("token"); // Verifica si hay un token en localStorage
 
   return (
     <nav
@@ -60,7 +50,7 @@ const Navbar: React.FC = () => {
 
       {/* Navegación */}
       <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
-        {role === "cliente" ? (
+        {user?.role === "cliente" && (
           <>
             <Link
               to="/products-display"
@@ -87,7 +77,7 @@ const Navbar: React.FC = () => {
               <FaShoppingCart />
             </Link>
             <Link
-              to="/order-tracking" // Nueva ruta para mis pedidos
+              to="/order-tracking"
               style={{
                 textDecoration: "none",
                 color: "#000",
@@ -100,125 +90,123 @@ const Navbar: React.FC = () => {
               Mis Pedidos
             </Link>
           </>
-        ) : (
+        )}
+
+        {(user?.role === "proveedor" || user?.role === "administrador") && (
+          <Link
+            to="/provider-orders"
+            style={{
+              textDecoration: "none",
+              color: "#000",
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+            }}
+          >
+            <FaClipboardList />
+            Pedidos Relacionados
+          </Link>
+        )}
+
+        {user?.role === "proveedor" && (
           <>
-            {(role === "proveedor" || role === "administrador") && (
-              <>
-                <Link
-                  to="/provider-orders" // Botón para pedidos relacionados
-                  style={{
-                    textDecoration: "none",
-                    color: "#000",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "8px",
-                  }}
-                >
-                  <FaClipboardList />
-                  Pedidos Relacionados
-                </Link>
-              </>
-            )}
-            {role === "proveedor" && (
-              <>
-                <Link
-                  to="/products"
-                  style={{
-                    textDecoration: "none",
-                    color: "#000",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "8px",
-                  }}
-                >
-                  <FaListAlt />
-                  Mis Productos
-                </Link>
-                <Link
-                  to="/add-product"
-                  style={{
-                    textDecoration: "none",
-                    color: "#000",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "8px",
-                  }}
-                >
-                  <FaPlusCircle />
-                  Agregar Producto
-                </Link>
-                <Link
-                  to="/products-display"
-                  style={{
-                    textDecoration: "none",
-                    color: "#000",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "8px",
-                  }}
-                >
-                  <FaThList />
-                  Ver Todos los Productos
-                </Link>
-              </>
-            )}
-            {role === "administrador" && (
-              <>
-                <Link
-                  to="/admin"
-                  style={{
-                    textDecoration: "none",
-                    color: "#000",
-                    fontWeight: "bold",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "8px",
-                  }}
-                >
-                  <FaTools />
-                  Panel Administrativo
-                </Link>
-                <Link
-                  to="/products"
-                  style={{
-                    textDecoration: "none",
-                    color: "#000",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "8px",
-                  }}
-                >
-                  <FaListAlt />
-                  Mis Productos
-                </Link>
-                <Link
-                  to="/add-product"
-                  style={{
-                    textDecoration: "none",
-                    color: "#000",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "8px",
-                  }}
-                >
-                  <FaPlusCircle />
-                  Agregar Producto
-                </Link>
-                <Link
-                  to="/products-display"
-                  style={{
-                    textDecoration: "none",
-                    color: "#000",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "8px",
-                  }}
-                >
-                  <FaThList />
-                  Ver Todos los Productos
-                </Link>
-              </>
-            )}
+            <Link
+              to="/products"
+              style={{
+                textDecoration: "none",
+                color: "#000",
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+              }}
+            >
+              <FaListAlt />
+              Mis Productos
+            </Link>
+            <Link
+              to="/add-product"
+              style={{
+                textDecoration: "none",
+                color: "#000",
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+              }}
+            >
+              <FaPlusCircle />
+              Agregar Producto
+            </Link>
+            <Link
+              to="/products-display"
+              style={{
+                textDecoration: "none",
+                color: "#000",
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+              }}
+            >
+              <FaThList />
+              Ver Todos los Productos
+            </Link>
+          </>
+        )}
+
+        {user?.role === "administrador" && (
+          <>
+            <Link
+              to="/admin"
+              style={{
+                textDecoration: "none",
+                color: "#000",
+                fontWeight: "bold",
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+              }}
+            >
+              <FaTools />
+              Panel Administrativo
+            </Link>
+            <Link
+              to="/products"
+              style={{
+                textDecoration: "none",
+                color: "#000",
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+              }}
+            >
+              <FaListAlt />
+              Mis Productos
+            </Link>
+            <Link
+              to="/add-product"
+              style={{
+                textDecoration: "none",
+                color: "#000",
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+              }}
+            >
+              <FaPlusCircle />
+              Agregar Producto
+            </Link>
+            <Link
+              to="/products-display"
+              style={{
+                textDecoration: "none",
+                color: "#000",
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+              }}
+            >
+              <FaThList />
+              Ver Todos los Productos
+            </Link>
           </>
         )}
 
